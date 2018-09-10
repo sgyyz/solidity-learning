@@ -37,13 +37,24 @@ contract("Coin", ([minter, receiver, other]) => {
   });
 
   it("Receiver sent 3 amount to other", async () => {
-    await this.instance.mint(minter, 20);
-    await this.instance.send(receiver, 3, {from: minter});
+    await this.instance.mint(receiver, 10);
+    await this.instance.sendAmount(other, 3, {from: receiver});
 
-    let senderAmount = await this.instance.balances(minter);
-    let receiverAmount = await this.instance.balances(receiver);
+    let receiverAmountBalance = await this.instance.balances(receiver);
+    let otherAmountBalance = await this.instance.balances(other);
 
-    assert.equal(senderAmount, 7, "send 3 out. 7 left.");
-    assert.equal(receiverAmount, 3, "received 3.")
+    assert.equal(receiverAmountBalance, 7, "send 3 out. 7 left.");
+    assert.equal(otherAmountBalance, 3, "received 3.")
+  });
+
+  it("Receiver does not have enough amount to send", async () => {
+    await this.instance.mint(receiver, 10);
+    await this.instance.sendAmount(other, 20, {from: receiver});
+
+    let receiverAmountBalance = await this.instance.balances(receiver);
+    let otherAmountBalance = await this.instance.balances(other);
+
+    assert.equal(receiverAmountBalance, 10, "Receiver still has 10.");
+    assert.equal(otherAmountBalance, 0, "Other does not have any number.");
   });
 });
