@@ -34,7 +34,7 @@ contract TestFunding {
     funding.donate.value(5 finney)();
     funding.donate.value(15 finney)();
 
-    Assert.equal(funding.balance(this), 20 finney, "Donate balance is different than sum of donation 20.");
+    Assert.equal(funding.balances(this), 20 finney, "Donate balance is different than sum of donation 20.");
   }
 
   function testDonatingLessThanLimit() public {
@@ -56,11 +56,18 @@ contract TestFunding {
   function testWithdrawByAnOwnerSuccess() public {
     Funding funding = new Funding();
 
-    funding.donate.value(100 finney)();
-    bool result = address(funding).call(bytes4(keccak256("withdraw()")));
+    uint initBalance = address(this).balance;
 
-    // TODO: FIX IT, IT SHOULD BE TRUE
-    Assert.equal(result, false, "Call withdraw failed even reach goal");
+    funding.donate.value(50 finney)();
+    bool result = address(funding).call(bytes4(keccak256("withdraw()")));
+    Assert.equal(result, false, "Allows for withdrawal before reaching the goal");
+
+    funding.donate.value(50 finney)();
+    Assert.equal(address(this).balance, initBalance - 100 finney, "Balance before withdrawal doesn't correspond to the sum of donations");
+    
+    bool result1 = address(funding).call(bytes4(keccak256("withdraw()")));
+    Assert.equal(result1, true, "Doesn't allow for withdrawal after reaching the goal");
+    Assert.equal(address(this).balance, initBalance, "Balance after withdrawal doesn't correspond to the sum of donations");
   }
 
   function testWithdrawByNotAnOwner() public {

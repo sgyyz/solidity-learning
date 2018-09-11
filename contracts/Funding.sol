@@ -8,7 +8,7 @@ contract Funding is Ownable {
 
   uint public raised;
   uint public constant goal = 100 finney;
-  mapping(address => uint) public balance;
+  mapping(address => uint) public balances;
 
   modifier donateLimitation() {
     require(msg.value > 1 finney, "At least over 1 finney.");
@@ -25,13 +25,6 @@ contract Funding is Ownable {
     _;
   }
 
-  constructor() public {
-  }
-
-  function () public payable {
-
-  }
-
   function isFunded() public view returns (bool) {
     return raised >= goal;
   }
@@ -40,7 +33,7 @@ contract Funding is Ownable {
     donateLimitation 
     payable 
   {
-    balance[msg.sender] = balance[msg.sender].add(msg.value);
+    balances[msg.sender] = balances[msg.sender].add(msg.value);
     raised = raised.add(msg.value);
   }
 

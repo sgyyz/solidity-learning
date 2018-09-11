@@ -26,8 +26,8 @@ contract("Funding", accounts => {
     await funding.donate({from: secondAccount, value: 20 * FINNEY});
     await funding.donate({from: secondAccount, value: 30 * FINNEY});
 
-    assert.equal(await funding.balance.call(firstAccount), 10 * FINNEY);
-    assert.equal(await funding.balance.call(secondAccount), 50 * FINNEY);
+    assert.equal(await funding.balances.call(firstAccount), 10 * FINNEY);
+    assert.equal(await funding.balances.call(secondAccount), 50 * FINNEY);
   });
 
   it("Donate is not allowed due to less than limitation", async () => {
