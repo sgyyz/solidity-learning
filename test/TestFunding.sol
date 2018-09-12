@@ -8,6 +8,12 @@ contract TestFunding {
   // setup the initial balance for contract in testing
   uint public initialBalance = 10 ether;
 
+  // this is used to receive money as the default fall back
+  // like the funding contract transfer balance back to this contract, it just call `transfer` method,
+  // and there is no payable metho in TestContract to receive money, 
+  // so we should define a payable default method to receive it.
+  function() public payable {}
+
   function testSettingOwnerDuringCreation() public {
     Funding funding = new Funding();
     Assert.equal(funding.owner(), this, "An owner is different than a deployer.");
@@ -58,15 +64,14 @@ contract TestFunding {
 
     uint initBalance = address(this).balance;
 
-    funding.donate.value(50 finney)();
-    bool result = address(funding).call(bytes4(keccak256("withdraw()")));
-    Assert.equal(result, false, "Allows for withdrawal before reaching the goal");
-
-    funding.donate.value(50 finney)();
+    // donate 100 finney
+    funding.donate.value(100 finney)();
     Assert.equal(address(this).balance, initBalance - 100 finney, "Balance before withdrawal doesn't correspond to the sum of donations");
-    
-    bool result1 = address(funding).call(bytes4(keccak256("withdraw()")));
-    Assert.equal(result1, true, "Doesn't allow for withdrawal after reaching the goal");
+    Assert.equal(address(funding).balance, 100 finney, "aaa");
+
+    // withdraw
+    bool result = address(funding).call(bytes4(keccak256("withdraw()")));
+    Assert.equal(result, true, "Allows for withdrawal before reaching the goal");
     Assert.equal(address(this).balance, initBalance, "Balance after withdrawal doesn't correspond to the sum of donations");
   }
 

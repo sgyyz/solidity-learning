@@ -15,11 +15,6 @@ contract Funding is Ownable {
     _;
   }
 
-  modifier onlyOwner() {
-    require(owner == msg.sender, "sender is not owner.");
-    _;
-  }
-
   modifier onlyFunded() {
     require(isFunded(), "Raise does not reach goal.");
     _;
