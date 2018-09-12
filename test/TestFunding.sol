@@ -96,9 +96,11 @@ contract TestFunding {
     uint initBalance = address(this).balance;
     funding.donate.value(100 finney)();
     Assert.equal(address(this).balance, initBalance - 100 finney, "Donate failed.");
+    Assert.equal(funding.raised(), 100 finney, "Raided 100 finney.");
 
     bool result = address(funding).call(bytes4(keccak256("refund()")));
     Assert.equal(result, true, "Refund 0 should fail."); 
     Assert.equal(address(this).balance, initBalance, "After refund, balance should be same as initial.");
+    Assert.equal(funding.raised(), 0 finney, "Raised should be 0.");
   }
 }

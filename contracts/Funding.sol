@@ -42,6 +42,8 @@ contract Funding is Ownable {
     uint amount = balances[msg.sender];
     require(amount > 0, "account doens't have any balance.");
 
+    balances[msg.sender] = 0;
+    raised = raised.sub(amount);
     msg.sender.transfer(amount);
     emit RefundSuccess(msg.sender, amount);
   }

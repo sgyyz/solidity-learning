@@ -83,9 +83,12 @@ contract("Funding", accounts => {
     const initialBalance = web3.eth.getBalance(secondAccount);
 
     await funding.donate({from: secondAccount, value: 10 * FINNEY});
+    assert.equal(await funding.raised(), 10 * FINNEY);
+
     await funding.refund({from: secondAccount});
     
     const finalBalance = web3.eth.getBalance(secondAccount);
     assert.ok(initialBalance.greaterThan(finalBalance));
+    assert.equal(await funding.raised(), 0 * FINNEY);
   });
 });
