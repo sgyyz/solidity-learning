@@ -67,4 +67,25 @@ contract("Funding", accounts => {
       assert.ok(/revert/.test(error.message));
     }
   });
+
+  it("Refund failed due to balance is 0", async () => {
+    const funding = await Funding.new({from: firstAccount});
+    try {
+      await funding.refund({from: secondAccount});
+      assert.fail();
+    } catch (error) {
+      assert.ok(/revert/.test(error.message));
+    }
+  });
+
+  it("Refund success.", async () => {
+    const funding = await Funding.new({from: firstAccount});
+    const initialBalance = web3.eth.getBalance(secondAccount);
+
+    await funding.donate({from: secondAccount, value: 10 * FINNEY});
+    await funding.refund({from: secondAccount});
+    
+    const finalBalance = web3.eth.getBalance(secondAccount);
+    assert.ok(initialBalance.greaterThan(finalBalance));
+  });
 });

@@ -10,6 +10,8 @@ contract Funding is Ownable {
   uint public constant goal = 100 finney;
   mapping(address => uint) public balances;
 
+  event RefundSuccess(address indexed refundAddress, uint amount);
+
   modifier donateLimitation() {
     require(msg.value > 1 finney, "At least over 1 finney.");
     _;
@@ -34,5 +36,13 @@ contract Funding is Ownable {
 
   function withdraw() public onlyOwner onlyFunded {
     owner.transfer(address(this).balance);
+  }
+
+  function refund() public {
+    uint amount = balances[msg.sender];
+    require(amount > 0, "account doens't have any balance.");
+
+    msg.sender.transfer(amount);
+    emit RefundSuccess(msg.sender, amount);
   }
 }

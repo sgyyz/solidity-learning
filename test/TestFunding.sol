@@ -82,4 +82,23 @@ contract TestFunding {
     bool result = address(funding).call(bytes4(keccak256("withdraw()")));
     Assert.equal(result, false, "Only allow owner do the withdraw.");
   }
+
+  function testRefundZeroFailed() public {
+    Funding funding = new Funding();
+
+    bool result = address(funding).call(bytes4(keccak256("refund()")));
+    Assert.equal(result, false, "Refund 0 should fail.");
+  }
+
+  function testRefundSuccess() public {
+    Funding funding = new Funding();
+
+    uint initBalance = address(this).balance;
+    funding.donate.value(100 finney)();
+    Assert.equal(address(this).balance, initBalance - 100 finney, "Donate failed.");
+
+    bool result = address(funding).call(bytes4(keccak256("refund()")));
+    Assert.equal(result, true, "Refund 0 should fail."); 
+    Assert.equal(address(this).balance, initBalance, "After refund, balance should be same as initial.");
+  }
 }
